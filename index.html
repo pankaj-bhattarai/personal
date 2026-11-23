@@ -1,695 +1,423 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pankaj Bhattarai — Computational Biology, Florida State University</title>
-<meta name="description" content="Pankaj Bhattarai, Ph.D. student in Computer Science at Florida State University. Research on graph representation learning for single-cell cancer genomics." />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pankaj Bhattarai | Machine learning for cancer genomics, Florida State University</title>
+<meta name="description" content="Pankaj Bhattarai, Ph.D. student in Computer Science at Florida State University, building machine learning methods for single-cell and spatial cancer genomics.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-
   :root{
-    --bg:#f2f6f7;
-    --paper:#ffffff;
-    --ink:#0c1420;
-    --muted:#4d5c63;
-    --muted2:#7c8a91;
-    --line:#dde6ea;
-    --line-strong:#c7d4d8;
-
-    --cyan:#0e7f9c;
-    --cyan-soft:#e2f1f4;
-    --magenta:#a53a70;
-    --magenta-soft:#f6e6ee;
-    --amber:#b3790f;
-    --amber-soft:#f7ecd8;
-
-    --display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-    --radius: 10px;
-    --sidebar-w: 260px;
+    --paper:#fcfcfd;
+    --ink:#1c2128;
+    --muted:#5b6570;
+    --rule:#e2e6eb;
+    --band:#f1f3f6;
+    --link:#2c5a9a;
+    --gain:#b23b36;
+    --loss:#2c5a9a;
+    --serif:"Literata", Georgia, "Times New Roman", serif;
+    --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#14171c;
+      --ink:#e6e9ed;
+      --muted:#9aa4ae;
+      --rule:#2b3139;
+      --band:#1b2027;
+      --link:#8db4ec;
+      --gain:#e2736d;
+      --loss:#8db4ec;
+      color-scheme: dark;
+    }
   }
 
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--body);
-    font-size:16px;
-    line-height:1.65;
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
+  a{ color:var(--link); text-underline-offset:2px; text-decoration-thickness:1px; }
+  a:hover{ text-decoration-thickness:2px; }
+  a:focus-visible{ outline:2px solid var(--link); outline-offset:3px; border-radius:2px; }
 
-  a{ color:var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-  a:hover{ color:var(--magenta); }
-  a:focus-visible, button:focus-visible, summary:focus-visible{
-    outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 3px;
+  .wrap{ max-width:46rem; margin:0 auto; padding:0 1.25rem; }
+
+  /* Header */
+  header.top{ padding:3.5rem 0 1.5rem; }
+  h1{
+    font-family:var(--serif); font-weight:600; font-size:clamp(2rem, 5vw, 2.75rem);
+    line-height:1.1; margin:0 0 .5rem; letter-spacing:-0.01em;
+  }
+  .role{ margin:0; color:var(--muted); font-size:1.05rem; }
+  .contact-line{ margin:.9rem 0 0; display:flex; flex-wrap:wrap; gap:.4rem 1.25rem; font-size:.95rem; }
+  .contact-line span{ color:var(--muted); }
+
+  .cna{ display:block; width:100%; height:auto; margin:2rem 0 .25rem; }
+  .cna .base{ stroke:var(--rule); stroke-width:1; }
+  .cna .band{ fill:var(--band); }
+  .cna .segs line{ stroke-width:3; stroke-linecap:butt; vector-effect:non-scaling-stroke; }
+  .cna .flat{ stroke:var(--muted); opacity:.55; }
+  .cna .gain{ stroke:var(--gain); }
+  .cna .loss{ stroke:var(--loss); }
+  .cna .chr text{ font-family:var(--sans); font-size:10px; fill:var(--muted); }
+  .cna-caption{ margin:0; font-size:.8rem; color:var(--muted); }
+  .cna-caption .g{ color:var(--gain); font-weight:600; }
+  .cna-caption .l{ color:var(--loss); font-weight:600; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .cna .segs{ animation:reveal 1.4s ease-out both; clip-path:inset(0 100% 0 0); }
+    @keyframes reveal{ to{ clip-path:inset(0 0 0 0); } }
   }
 
-  h1,h2,h3{ font-family:var(--display); font-weight:600; margin:0; letter-spacing:-0.01em; }
-
-  .skip-link{
-    position:absolute; left:-999px; top:0; background:var(--ink); color:#fff;
-    padding:10px 16px; z-index:200; border-radius: 0 0 8px 0;
+  nav.sections{
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    margin-top:1.75rem; padding:.6rem 0;
+    display:flex; flex-wrap:wrap; gap:.25rem .95rem; font-size:.9rem;
   }
-  .skip-link:focus{ left:0; }
+  nav.sections a{ color:var(--ink); text-decoration:none; }
+  nav.sections a:hover{ color:var(--link); text-decoration:underline; }
 
-  /* ---------- layout shell ---------- */
-  .shell{
-    display:grid;
-    grid-template-columns: var(--sidebar-w) minmax(0,1fr);
-    max-width:1180px;
-    margin:0 auto;
+  /* Sections */
+  section{ padding:2.5rem 0 .5rem; scroll-margin-top:1rem; }
+  h2{
+    font-family:var(--serif); font-weight:600; font-size:1.5rem; line-height:1.25;
+    margin:0 0 1.1rem;
   }
+  h3{ font-family:var(--sans); font-weight:600; font-size:1.05rem; margin:0; line-height:1.4; }
+  p{ margin:0 0 1rem; }
+  .lede{ font-family:var(--serif); font-size:1.15rem; line-height:1.65; }
 
-  @media (max-width: 900px){
-    .shell{ grid-template-columns: 1fr; }
-  }
+  .item{ padding:1rem 0; border-top:1px solid var(--rule); }
+  .item:first-of-type{ border-top:none; padding-top:0; }
+  .item-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .when{ color:var(--muted); font-size:.9rem; white-space:nowrap; flex-shrink:0; }
+  .meta{ color:var(--muted); font-size:.95rem; margin:.2rem 0 0; }
+  .item ul{ margin:.6rem 0 0; padding-left:1.2rem; }
+  .item li{ margin:.3rem 0; }
+  .item p{ margin:.5rem 0 0; }
 
-  /* ---------- sidebar ---------- */
-  .sidebar{
-    position:sticky;
-    top:0;
-    align-self:start;
-    height:100vh;
-    padding:34px 22px 28px;
-    border-right:1px solid var(--line);
-    display:flex;
-    flex-direction:column;
-    gap:26px;
-  }
-
-  @media (max-width: 900px){
-    .sidebar{
-      position:relative;
-      height:auto;
-      border-right:none;
-      border-bottom:1px solid var(--line);
-      padding:20px 20px 14px;
-    }
+  .status{
+    display:inline-block; font-size:.8rem; font-weight:600; line-height:1.3;
+    padding:.1rem .45rem; border-radius:4px; border:1px solid var(--rule);
+    color:var(--muted); margin-left:.35rem; vertical-align:2px; white-space:nowrap;
   }
 
-  .brand .eyebrow{
-    font-family:var(--mono);
-    font-size:11.5px;
-    letter-spacing:0.10em;
-    text-transform:uppercase;
-    color:var(--muted2);
-    margin:0 0 8px;
+  .figures{
+    display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:.5rem;
+    margin:.9rem 0 0; padding:0;
   }
-  .brand h1{ font-size:23px; line-height:1.25; }
-  .brand .role{
-    margin-top:8px; font-size:14px; color:var(--muted); font-family:var(--body);
+  .figures div{ border-left:3px solid var(--gain); padding:.15rem 0 .15rem .65rem; }
+  .figures dt{ font-family:var(--serif); font-weight:600; font-size:1.3rem; line-height:1.2; }
+  .figures dd{ margin:0; font-size:.85rem; color:var(--muted); }
+
+  .pubs{ list-style:none; margin:0; padding:0; counter-reset:none; }
+  .pubs li{ padding:.9rem 0; border-top:1px solid var(--rule); }
+  .pubs li:first-child{ border-top:none; padding-top:0; }
+  .pub-title{ font-weight:600; }
+  .pub-authors{ margin:.15rem 0 0; color:var(--muted); font-size:.95rem; }
+  .pub-authors b{ color:var(--ink); font-weight:600; }
+  .pub-venue{ margin:.15rem 0 0; font-size:.95rem; }
+  .pub-venue em{ font-style:italic; }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1.5rem 2rem; }
+  .two-col h3{ margin-bottom:.4rem; }
+  .plain-list{ margin:0; padding-left:1.1rem; }
+  .plain-list li{ margin:.25rem 0; }
+  .muted{ color:var(--muted); }
+  .small{ font-size:.92rem; }
+
+  footer{ border-top:1px solid var(--rule); margin-top:3rem; padding:1.5rem 0 3rem; color:var(--muted); font-size:.85rem; }
+
+  @media (max-width:640px){
+    body{ font-size:16px; }
+    header.top{ padding-top:2.25rem; }
+    .item-head{ flex-direction:column; gap:.1rem; }
+    .figures{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .two-col{ grid-template-columns:1fr; }
+    .cna .chr{ display:none; }
   }
-
-  nav.sidenav{
-    display:flex; flex-direction:column; gap:2px; font-family:var(--display); font-size:13.5px;
+  @media print{
+    nav.sections, .cna, .cna-caption{ display:none; }
+    a{ color:inherit; }
   }
-  nav.sidenav a{
-    color:var(--ink); text-decoration:none; padding:7px 9px; border-radius:6px;
-    border-left:2px solid transparent;
-  }
-  nav.sidenav a:hover{ background:var(--cyan-soft); border-left-color:var(--cyan); color:var(--ink); }
-
-  .sb-contact{
-    margin-top:auto; padding-top:18px; border-top:1px solid var(--line);
-    font-family:var(--mono); font-size:12.5px; color:var(--muted); display:flex; flex-direction:column; gap:6px;
-  }
-  .sb-contact a{ color:var(--muted); }
-  .sb-contact a:hover{ color:var(--magenta); }
-
-  details.mobile-nav{ display:none; }
-  @media (max-width: 900px){
-    details.mobile-nav{ display:block; margin-top:14px; }
-    details.mobile-nav summary{
-      cursor:pointer; list-style:none; font-family:var(--display); font-weight:600; font-size:13.5px;
-      padding:9px 12px; border:1px solid var(--line-strong); border-radius:8px; display:flex;
-      align-items:center; justify-content:space-between;
-    }
-    details.mobile-nav summary::after{ content:"Menu ▾"; color:var(--muted); font-weight:500; }
-    details.mobile-nav[open] summary::after{ content:"Menu ▴"; }
-    details.mobile-nav summary::-webkit-details-marker{ display:none; }
-    details.mobile-nav nav{ display:grid; grid-template-columns:1fr 1fr; gap:2px; padding-top:10px; }
-    .sidebar > nav.sidenav{ display:none; }
-  }
-
-  /* ---------- main ---------- */
-  main{ padding: 40px 30px 80px; min-width:0; }
-  @media (max-width:900px){ main{ padding:28px 20px 60px; } }
-  @media (max-width:520px){ main{ padding:22px 16px 52px; } }
-
-  section{ padding-top:54px; scroll-margin-top:24px; }
-  section:first-of-type{ padding-top:0; }
-
-  .kicker{
-    font-family:var(--mono); font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--muted2); display:flex; align-items:center; gap:10px; margin-bottom:10px;
-  }
-  .kicker::after{ content:""; flex:1; height:1px; background:var(--line); }
-  h2.h-section{ font-size: clamp(20px, 2.4vw, 25px); margin-bottom:18px; }
-
-  /* ---------- hero ---------- */
-  .hero{ padding-top:6px; }
-  .hero-grid{
-    display:grid; grid-template-columns: 1.15fr 0.85fr; gap:30px; align-items:center;
-  }
-  @media (max-width:760px){ .hero-grid{ grid-template-columns:1fr; } }
-
-  .hero h2{
-    font-size: clamp(26px, 4vw, 38px); line-height:1.18; margin-bottom:16px;
-  }
-  .hero h2 .accent{ color:var(--cyan); }
-  .hero p.lede{ font-size:17px; color:var(--muted); max-width:56ch; }
-
-  .stat-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
-  .stat{
-    font-family:var(--mono); font-size:12.5px; border:1px solid var(--line-strong);
-    background:var(--paper); border-radius:999px; padding:7px 13px; color:var(--ink);
-  }
-  .stat b{ color:var(--cyan); }
-
-  .hero-art{ width:100%; }
-  .hero-art svg{ width:100%; height:auto; display:block; }
-
-  /* ---------- generic cards ---------- */
-  .card{
-    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px 20px;
-  }
-
-  .entry{ padding:18px 0; border-top:1px solid var(--line); }
-  .entry:first-child{ border-top:none; padding-top:0; }
-  .entry-head{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; align-items:baseline; }
-  .entry-title{ font-family:var(--display); font-weight:600; font-size:16px; }
-  .entry-when{ font-family:var(--mono); font-size:12px; color:var(--muted2); white-space:nowrap; }
-  .entry-sub{ color:var(--muted); font-size:14.5px; margin-top:3px; }
-  .entry ul{ margin:10px 0 0 20px; padding:0; }
-  .entry li{ margin:6px 0; color:var(--ink); }
-  .entry li::marker{ color:var(--cyan); }
-
-  .tag-row{ display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
-  .tag{
-    font-family:var(--mono); font-size:11.5px; padding:4px 9px; border-radius:6px;
-    background:var(--cyan-soft); color:var(--cyan); border:1px solid transparent;
-  }
-  .tag.m{ background:var(--magenta-soft); color:var(--magenta); }
-  .tag.a{ background:var(--amber-soft); color:var(--amber); }
-
-  .doi{ font-family:var(--mono); font-size:12.5px; color:var(--muted); }
-
-  /* research flagship block */
-  .flagship{
-    background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:24px 24px 22px;
-    margin-bottom:8px;
-  }
-  .flagship-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
-  .flagship h3{ font-size:19px; }
-  .flagship .role-tag{ font-family:var(--mono); font-size:11.5px; color:var(--muted2); margin-top:4px; }
-  .metric-grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:18px;
-  }
-  @media (max-width:640px){ .metric-grid{ grid-template-columns:repeat(2,1fr); } }
-  .metric{
-    border:1px solid var(--line); border-radius:8px; padding:12px 12px; background:var(--bg);
-  }
-  .metric .num{ font-family:var(--mono); font-size:20px; color:var(--cyan); font-weight:500; }
-  .metric .lab{ font-size:12px; color:var(--muted); margin-top:3px; }
-
-  /* skills */
-  .skill-groups{ display:grid; grid-template-columns:1fr 1fr; gap:18px 26px; }
-  @media (max-width:640px){ .skill-groups{ grid-template-columns:1fr; } }
-  .skill-group h4{
-    font-family:var(--display); font-size:13px; text-transform:uppercase; letter-spacing:0.06em;
-    color:var(--muted2); margin:0 0 8px; font-weight:600;
-  }
-  .skill-group .tag-row{ margin-top:0; }
-
-  /* two-col section wrapper for education/coursework, patents/service */
-  .split{ display:grid; grid-template-columns:1fr 1fr; gap:34px; }
-  @media (max-width:760px){ .split{ grid-template-columns:1fr; } }
-
-  footer.site-footer{
-    border-top:1px solid var(--line); margin-top:40px; padding:28px 30px 40px;
-    font-family:var(--mono); font-size:12px; color:var(--muted2);
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
-  }
-  @media (max-width:900px){ footer.site-footer{ padding:24px 20px 36px; } }
-
-  @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior:auto; }
-    .pulse-edge{ animation:none !important; }
-  }
-
-  .pulse-edge{ animation: dashpulse 3.2s linear infinite; }
-  @keyframes dashpulse{ to{ stroke-dashoffset:-24; } }
 </style>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
+<div class="wrap">
 
-<div class="shell">
-  <aside class="sidebar">
-    <div class="brand">
-      <p class="eyebrow">Ph.D. · Computer Science</p>
-      <h1>Pankaj Bhattarai</h1>
-      <p class="role">Computational biology &amp; cancer genomics<br>Florida State University</p>
-    </div>
+  <header class="top">
+    <h1>Pankaj Bhattarai</h1>
+    <p class="role">Ph.D. student in Computer Science, Florida State University. Machine learning for single-cell and spatial cancer genomics.</p>
+    <p class="contact-line">
+      <span class="obfuscated-email" data-user="pbhattarai" data-domain="fsu.edu">pbhattarai [at] fsu [dot] edu</span>
+      <a href="https://www.linkedin.com/in/pankajbhattarai/" target="_blank" rel="noreferrer">LinkedIn</a>
+      <span>Tallahassee, Florida</span>
+      <a href="https://github.com/compbio-mallory" target="_blank" rel="noreferrer">Lab GitHub (all project code)</a>
+    </p>
 
-    <nav class="sidenav" aria-label="Section navigation">
+    <svg class="cna" viewBox="0 0 720 74" role="img" aria-label="Illustration of a tumor copy-number profile across chromosomes 1 to 22, with gains above the baseline and losses below."><line x1="0" y1="30" x2="720" y2="30" class="base"/><rect x="60.0" y="4" width="55.4" height="52" class="band"/><rect x="166.6" y="4" width="43.5" height="52" class="band"/><rect x="257.5" y="4" width="39.1" height="52" class="band"/><rect x="339.0" y="4" width="33.2" height="52" class="band"/><rect x="409.7" y="4" width="30.7" height="52" class="band"/><rect x="477.3" y="4" width="30.4" height="52" class="band"/><rect x="539.8" y="4" width="24.5" height="52" class="band"/><rect x="593.6" y="4" width="20.6" height="52" class="band"/><rect x="639.1" y="4" width="18.3" height="52" class="band"/><rect x="676.9" y="4" width="14.6" height="52" class="band"/><rect x="708.3" y="4" width="11.7" height="52" class="band"/><g class="segs"><line x1="0.0" y1="30" x2="27.3" y2="30" class="flat"/><line x1="27.3" y1="14" x2="57.0" y2="14" class="gain"/><line x1="60.0" y1="30" x2="115.3" y2="30" class="flat"/><line x1="118.3" y1="30" x2="136.4" y2="30" class="flat"/><line x1="136.4" y1="14" x2="163.6" y2="14" class="gain"/><line x1="166.6" y1="46" x2="210.1" y2="46" class="loss"/><line x1="213.1" y1="30" x2="237.9" y2="30" class="flat"/><line x1="237.9" y1="14" x2="254.5" y2="14" class="gain"/><line x1="257.5" y1="30" x2="296.6" y2="30" class="flat"/><line x1="299.6" y1="14" x2="336.0" y2="14" class="gain"/><line x1="339.0" y1="46" x2="349.9" y2="46" class="loss"/><line x1="349.9" y1="14" x2="372.1" y2="14" class="gain"/><line x1="375.1" y1="46" x2="386.2" y2="46" class="loss"/><line x1="386.2" y1="30" x2="406.7" y2="30" class="flat"/><line x1="409.7" y1="30" x2="425.0" y2="30" class="flat"/><line x1="425.0" y1="46" x2="440.4" y2="46" class="loss"/><line x1="443.4" y1="30" x2="474.3" y2="30" class="flat"/><line x1="477.3" y1="30" x2="507.7" y2="30" class="flat"/><line x1="510.7" y1="46" x2="536.8" y2="46" class="loss"/><line x1="539.8" y1="30" x2="564.2" y2="30" class="flat"/><line x1="567.2" y1="30" x2="590.6" y2="30" class="flat"/><line x1="593.6" y1="30" x2="614.2" y2="30" class="flat"/><line x1="617.2" y1="30" x2="622.9" y2="30" class="flat"/><line x1="622.9" y1="14" x2="636.1" y2="14" class="gain"/><line x1="639.1" y1="46" x2="657.4" y2="46" class="loss"/><line x1="660.4" y1="30" x2="673.9" y2="30" class="flat"/><line x1="676.9" y1="14" x2="691.6" y2="14" class="gain"/><line x1="694.6" y1="30" x2="705.3" y2="30" class="flat"/><line x1="708.3" y1="30" x2="720.0" y2="30" class="flat"/></g><g class="chr"><text x="28.5" y="70" text-anchor="middle">1</text><text x="87.6" y="70" text-anchor="middle">2</text><text x="141.0" y="70" text-anchor="middle">3</text><text x="233.8" y="70" text-anchor="middle">5</text><text x="425.0" y="70" text-anchor="middle">10</text><text x="578.9" y="70" text-anchor="middle">15</text><text x="684.3" y="70" text-anchor="middle">20</text><text x="714.2" y="70" text-anchor="middle">22</text></g></svg>
+    <p class="cna-caption">An illustrative tumor copy-number profile across chromosomes 1 to 22: <span class="g">gains</span> above the line, <span class="l">losses</span> below. Signals like these are what my models learn from.</p>
+
+    <nav class="sections" aria-label="Sections">
       <a href="#about">About</a>
       <a href="#research">Research</a>
       <a href="#publications">Publications</a>
       <a href="#talks">Presentations</a>
-      <a href="#service">Patents &amp; Service</a>
-      <a href="#teaching">Teaching</a>
       <a href="#education">Education</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#service">Service</a>
       <a href="#skills">Skills</a>
       <a href="#awards">Awards</a>
       <a href="#contact">Contact</a>
     </nav>
+  </header>
 
-    <details class="mobile-nav">
-      <summary>Sections</summary>
-      <nav aria-label="Section navigation (mobile)">
-        <a href="#about">About</a>
-        <a href="#research">Research</a>
-        <a href="#publications">Publications</a>
-        <a href="#talks">Presentations</a>
-        <a href="#service">Patents &amp; Service</a>
-        <a href="#teaching">Teaching</a>
-        <a href="#education">Education</a>
-        <a href="#skills">Skills</a>
-        <a href="#awards">Awards</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </details>
+  <main>
 
-    <div class="sb-contact">
-      <span class="obfuscated-email" data-user="pbhattarai" data-domain="fsu.edu">pbhattarai [at] fsu [dot] edu</span>
-      <a href="https://www.linkedin.com/in/pankajbhattarai/" target="_blank" rel="noreferrer">linkedin.com/in/pankajbhattarai</a>
-      <span>Tallahassee, FL</span>
-    </div>
-  </aside>
-
-  <main id="main">
-
-    <!-- HERO / ABOUT -->
-    <section id="about" class="hero">
-      <div class="hero-grid">
-        <div>
-          <h2>Decoding cancer <span class="accent">one cell at a time.</span></h2>
-          <p class="lede">
-           I'm a Ph.D. student in Computer Science at Florida State University, working at the intersection of machine learning and biology — using computational methods to make sense of cancer at the resolution of single cells. My research spans graph neural networks and unsupervised representation learning, copy number alteration (CNA) analysis, and spatial transcriptomics, with the broader goal of turning multi-modal biological signals into tools that help identify tumor cells, trace how cancer evolves, and eventually support clinical decisions.
-          </p>
-          <div class="stat-row">
-            <!-- <span class="stat">GPA <b>4.0/4.0</b></span> -->
-            <!-- <span class="stat">Graduate Research Assistant</span> -->
-            <!-- <span class="stat">Ad-hoc reviewer, <b>Nature Communications</b></span> -->
-          </div>
-        </div>
-        <div class="hero-art" aria-hidden="true">
-          <svg viewBox="0 0 380 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a single-cell attention graph, with malignant, normal, and stromal cells connected by weighted edges.">
-            <g stroke="#c7d4d8" stroke-width="1" opacity="0.9">
-              <line x1="95" y1="70" x2="150" y2="110"/>
-              <line x1="150" y1="110" x2="120" y2="165"/>
-              <line x1="150" y1="110" x2="205" y2="95"/>
-              <line x1="205" y1="95" x2="255" y2="130"/>
-              <line x1="120" y1="165" x2="90" y2="215"/>
-              <line x1="120" y1="165" x2="175" y2="205"/>
-              <line x1="175" y1="205" x2="230" y2="185"/>
-              <line x1="230" y1="185" x2="255" y2="130"/>
-              <line x1="175" y1="205" x2="165" y2="260"/>
-              <line x1="165" y1="260" x2="220" y2="290"/>
-              <line x1="230" y1="185" x2="285" y2="205"/>
-              <line x1="285" y1="205" x2="255" y2="130"/>
-              <line x1="60" y1="130" x2="95" y2="70"/>
-              <line x1="60" y1="130" x2="120" y2="165"/>
-              <line x1="300" y1="80" x2="255" y2="130"/>
-            </g>
-            <g stroke-width="2" fill="none" opacity="0.85">
-              <line class="pulse-edge" x1="150" y1="110" x2="230" y2="185" stroke="#a53a70" stroke-dasharray="4 5"/>
-              <line class="pulse-edge" x1="175" y1="205" x2="255" y2="130" stroke="#a53a70" stroke-dasharray="4 5"/>
-            </g>
-            <g>
-              <circle cx="95" cy="70" r="7" fill="#0e7f9c"/>
-              <circle cx="150" cy="110" r="10" fill="#a53a70"/>
-              <circle cx="205" cy="95" r="6" fill="#b3790f"/>
-              <circle cx="255" cy="130" r="11" fill="#a53a70"/>
-              <circle cx="120" cy="165" r="8" fill="#0e7f9c"/>
-              <circle cx="60" cy="130" r="6" fill="#0e7f9c"/>
-              <circle cx="300" cy="80" r="6" fill="#b3790f"/>
-              <circle cx="90" cy="215" r="7" fill="#0e7f9c"/>
-              <circle cx="175" cy="205" r="9" fill="#a53a70"/>
-              <circle cx="230" cy="185" r="8" fill="#a53a70"/>
-              <circle cx="285" cy="205" r="6" fill="#b3790f"/>
-              <circle cx="165" cy="260" r="7" fill="#0e7f9c"/>
-              <circle cx="220" cy="290" r="6" fill="#0e7f9c"/>
-            </g>
-            <g font-family="JetBrains Mono, monospace" font-size="10.5" fill="#7c8a91">
-              <circle cx="20" cy="320" r="4.5" fill="#a53a70"/>
-              <text x="30" y="324">malignant</text>
-              <circle cx="118" cy="320" r="4.5" fill="#0e7f9c"/>
-              <text x="128" y="324">normal</text>
-              <circle cx="200" cy="320" r="4.5" fill="#b3790f"/>
-              <text x="210" y="324">stromal</text>
-            </g>
-          </svg>
-        </div>
-      </div>
+    <section id="about">
+      <h2>About</h2>
+      <p class="lede">I build machine learning methods that make sense of cancer one cell at a time. My work combines graph representation learning, copy-number analysis, and spatial transcriptomics to identify tumor cells, trace how tumors evolve, and test what biological foundation models actually learn.</p>
+      <p>I am a Graduate Research Assistant in Prof. Xian Mallory's DeepBioMed Lab at Florida State University, working closely with the <a href="https://maiziezhoulab.github.io/" target="_blank" rel="noreferrer">Maizie Zhou Lab</a> at Vanderbilt University. I'm open to research internships and collaborations in machine learning for biology and health.</p>
     </section>
 
-    <!-- RESEARCH -->
     <section id="research">
-      <p class="kicker">Research</p>
-      <h2 class="h-section">Graduate Researcher — Florida State University</h2>
-      <p class="entry-when" style="margin-bottom:14px;">Aug 2025 – Present</p>
-      <p style="color:var(--muted); max-width:70ch; margin-bottom:22px;">
-        My work centers on computational methods for single-cell and spatial cancer genomics — spanning
-        graph representation learning, tumor evolution modeling, and spatial biology. Below are the projects
-        I've led or contributed to.
-      </p>
+      <h2>Research</h2>
 
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Spatial Transcriptomics</span>
-          <span class="entry-when">Ongoing</span>
+      <div class="item">
+        <div class="item-head">
+          <h3>Probing single-cell foundation models for cancer genome identity</h3>
+          <span class="when">Ongoing</span>
         </div>
-        <p class="entry-sub">Current project — developing computational methods for spatial transcriptomics data to resolve tumor structure and tissue-level context in cancer.</p>
+        <p>Do transcriptomic foundation models such as scGPT encode which tumor clone a cell belongs to, or its copy-number state? I'm testing this by probing and adapting model embeddings against biologically defined ground truth.</p>
       </div>
 
-      <div class="flagship" style="margin-top:22px;">
-        <div class="flagship-head">
-          <div>
-            <h3>DeepMalignant</h3>
-            <p class="role-tag">Unsupervised multimodal graph attention autoencoder for label-free tumor cell identification — completed</p>
-          </div>
+      <div class="item">
+        <div class="item-head">
+          <h3>DeepMalignant <span class="status">Under revision, Genome Research</span></h3>
+          <span class="when">Lead author</span>
         </div>
-        <ul style="margin:16px 0 0 20px; padding:0;">
-          <li>Integrated scRNA-seq expression and copy number alteration (CNA) signals through graph-based representation learning.</li>
-          <li>Designed a graph neural network architecture with multi-head attention and a contrastive (InfoNCE) objective to separate malignant from non-malignant cells without labels.</li>
-          <li>Extended to spatial transcriptomics (Visium), recovering spatial tumor regions consistent with histopathology annotations.</li>
-          <li>Robust across highly heterogeneous datasets, including challenging tumor microenvironments such as pancreatic PDAC.</li>
+        <p>An unsupervised graph attention autoencoder that identifies tumor cells without labels by learning joint representations of scRNA-seq expression and copy number alteration (CNA) signals.</p>
+        <ul>
+          <li>Graph neural network with multi-head attention and a contrastive (InfoNCE) objective.</li>
+          <li>Benchmarked against CopyKAT, scMalignantFinder, Cancer-Finder, and PreCanCell, consistently outperforming them.</li>
+          <li>Extended to 10x Visium spatial transcriptomics, recovering tumor regions that match histopathology annotations.</li>
+          <li>Robust in heterogeneous tumor microenvironments such as pancreatic ductal adenocarcinoma (PDAC).</li>
         </ul>
-        <div class="metric-grid">
-          <div class="metric"><div class="num">~0.97</div><div class="lab">peak F1 score</div></div>
-          <div class="metric"><div class="num">33</div><div class="lab">datasets evaluated</div></div>
-          <div class="metric"><div class="num">4</div><div class="lab">cancer types</div></div>
-          <div class="metric"><div class="num">3</div><div class="lab">sequencing platforms</div></div>
-        </div>
-        <div class="tag-row">
-          <span class="tag">10x Genomics</span>
-          <span class="tag">inDrop</span>
-          <span class="tag">Drop-seq</span>
-          <span class="tag m">Outperforms CopyKAT</span>
-          <span class="tag m">Outperforms scMalignantFinder</span>
-        </div>
+        <dl class="figures">
+          <div><dt>33</dt><dd>datasets</dd></div>
+          <div><dt>4</dt><dd>cancer types</dd></div>
+          <div><dt>3</dt><dd>sequencing platforms (10x, inDrop, Drop-seq)</dd></div>
+          <div><dt>~0.97</dt><dd>peak F1 score</dd></div>
+        </dl>
       </div>
 
-      <div class="entry" style="margin-top:22px;">
-        <div class="entry-head">
-          <span class="entry-title">scLongTree</span>
-          <span class="entry-when">Contributor</span>
+      <div class="item">
+        <div class="item-head">
+          <h3>OncoSpot <span class="status">Submitted, Genome Research</span></h3>
+          <span class="when">Lead author</span>
         </div>
-        <p class="entry-sub">Assisted with the revision of scLongTree, a computational tool for inferring longitudinal trees from single-cell DNA sequencing data.</p>
+        <p>A clonal simulator that generates spatial transcriptomics data with known copy-number clones, giving ground truth for benchmarking cancer spatial methods across tumor evolutionary modes. Open source, with a parameter-estimation workflow that calibrates simulations to your own reference data. <a href="https://github.com/compbio-mallory/OncoSpot" target="_blank" rel="noreferrer">Code on GitHub</a>.</p>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <h3>scLongTree <span class="status">Accepted, Briefings in Bioinformatics</span></h3>
+          <span class="when">Co-first author</span>
+        </div>
+        <p>A tool for inferring longitudinal tumor phylogenies from single-cell DNA sequencing data. I am co-first author and carried out the journal revision, including benchmarking against RobustClone and SCG.</p>
+      </div>
+
+      <div class="item">
+        <div class="item-head">
+          <h3>Other projects</h3>
+        </div>
+        <ul>
+          <li><strong>LLM alignment with DPO.</strong> Implemented Direct Preference Optimization fine-tuning in a team project; diagnosed BF16 numerical instability and stabilized training by keeping the policy model in FP32.</li>
+          <li><strong>Agentic AI with local LLMs.</strong> Built agent workflows with OpenClaw and Ollama-served models, focused on persistent agent memory.</li>
+        </ul>
       </div>
     </section>
 
-    <!-- PUBLICATIONS -->
     <section id="publications">
-      <p class="kicker">Publications &amp; Preprints</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Publications</h2>
-      <div class="entry">
-  <div class="entry-head">
-    <span class="entry-title">OncoSpot enables benchmarking of cancer spatial transcriptomics methods across tumor evolutionary modes</span>
-    <span class="entry-when">bioRxiv, 2026</span>
-  </div>
-  <p class="entry-sub"><b>P. Bhattarai</b>, W. Yuan, X. M. Zhou, X. Mallory</p>
-  <p class="doi">DOI: <a href="https://doi.org/10.64898/2026.11.01.763496" target="_blank" rel="noreferrer">10.64898/2026.11.01.763496</a> · Code: <a href="https://github.com/compbio-mallory/OncoSpot" target="_blank" rel="noreferrer">GitHub</a></p>
-</div>
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Multi-modality graph representation learning for malignant cell identification from scRNA-seq using DeepMalignant</span>
-          <span class="entry-when">bioRxiv, 2026</span>
-        </div>
-        <p class="entry-sub"><b>P. Bhattarai</b>, W. Yuan, H. Chi, X. M. Zhou, X. Mallory</p>
-        <p class="doi">DOI: <a href="https://doi.org/10.64898/2026.06.29.734828" target="_blank" rel="noreferrer">10.64898/2026.06.29.734828</a></p>
-      </div>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">scLongTree: an accurate computational tool to infer longitudinal trees from single-cell DNA sequencing data</span>
-          <span class="entry-when">bioRxiv, 2023</span>
-        </div>
-        <p class="entry-sub">R. Khan, <b>P. Bhattarai</b>, L. Zhang, X. M. Zhou, X. Mallory</p>
-        <p class="doi">DOI: <a href="https://doi.org/10.1101/2023.11.11.566680" target="_blank" rel="noreferrer">10.1101/2023.11.11.566680</a></p>
-      </div>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Detection of pneumonia using machine learning</span>
-          <span class="entry-when">ACM ICIMMI, 2023</span>
-        </div>
-        <p class="entry-sub"><b>P. Bhattarai</b>, V. K. Kumar, B. T., R. Od</p>
-        <p class="doi">DOI: <a href="https://doi.org/10.1145/3647444.3652464" target="_blank" rel="noreferrer">10.1145/3647444.3652464</a></p>
-      </div>
+      <h2>Publications and preprints</h2>
+      <ol class="pubs" reversed>
+        <li>
+          <div class="pub-title">OncoSpot enables benchmarking of cancer spatial transcriptomics methods across tumor evolutionary modes</div>
+          <p class="pub-authors"><b>P. Bhattarai</b>, W. Yuan, X. M. Zhou, X. Mallory</p>
+          <p class="pub-venue">Submitted to <em>Genome Research</em>; preprint on bioRxiv, 2026. <a href="https://doi.org/10.64898/2026.11.01.763496" target="_blank" rel="noreferrer">doi:10.64898/2026.11.01.763496</a></p>
+        </li>
+        <li>
+          <div class="pub-title">Multi-modality graph representation learning for malignant cell identification from scRNA-seq using DeepMalignant</div>
+          <p class="pub-authors"><b>P. Bhattarai</b>, W. Yuan, H. Chi, X. M. Zhou, X. Mallory</p>
+          <p class="pub-venue">Under revision at <em>Genome Research</em>; preprint on bioRxiv, 2026. <a href="https://doi.org/10.64898/2026.06.29.734828" target="_blank" rel="noreferrer">doi:10.64898/2026.06.29.734828</a></p>
+        </li>
+        <li>
+          <div class="pub-title">scLongTree: an accurate computational tool to infer longitudinal trees from single-cell DNA sequencing data</div>
+          <p class="pub-authors">R. Khan*, <b>P. Bhattarai*</b>, L. Zhang, X. M. Zhou, X. Mallory <span class="small">(*equal contribution)</span></p>
+          <p class="pub-venue">Accepted at <em>Briefings in Bioinformatics</em>, 2026. <a href="https://doi.org/10.1101/2023.11.11.566680" target="_blank" rel="noreferrer">Preprint: doi:10.1101/2023.11.11.566680</a></p>
+        </li>
+        <li>
+          <div class="pub-title">Detection of pneumonia using machine learning</div>
+          <p class="pub-authors"><b>P. Bhattarai</b>, V. K. Kumar, B. T., R. Od</p>
+          <p class="pub-venue"><em>Proceedings of ICIMMI</em>, ACM, 2023. <a href="https://doi.org/10.1145/3647444.3652464" target="_blank" rel="noreferrer">doi:10.1145/3647444.3652464</a></p>
+        </li>
+      </ol>
     </section>
 
-    <!-- PRESENTATIONS -->
     <section id="talks">
-      <p class="kicker">Conference Presentations</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Presentations</h2>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">DeepMalignant: multi-modality graph representation learning for malignant cell identification from scRNA-seq</span>
-          <span class="entry-when">2026</span>
+      <h2>Presentations</h2>
+      <div class="item">
+        <div class="item-head">
+          <h3>DeepMalignant: multi-modality graph representation learning for malignant cell identification from scRNA-seq</h3>
+          <span class="when">2026</span>
         </div>
-        <p class="entry-sub">Poster presentation — Intelligent Systems for Molecular Biology (ISMB 2026)</p>
+        <p class="meta">Poster, Intelligent Systems for Molecular Biology (ISMB 2026)</p>
       </div>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Detection of pneumonia using machine learning</span>
-          <span class="entry-when">Dec 2023</span>
+      <div class="item">
+        <div class="item-head">
+          <h3>Detection of pneumonia using machine learning</h3>
+          <span class="when">Dec 2023</span>
         </div>
-        <p class="entry-sub">5th International Conference on Information Management &amp; Machine Intelligence (ICIMMI 2023)</p>
+        <p class="meta">5th International Conference on Information Management and Machine Intelligence (ICIMMI 2023)</p>
       </div>
     </section>
 
-    <!-- PATENTS & SERVICE -->
-    <section id="service">
-      <p class="kicker">Patents &amp; Professional Service</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Patents and Service</h2>
-
-      <div class="split">
-        <div>
-          <h3 style="font-size:15px; margin-bottom:10px;">Patents</h3>
-          <div class="entry">
-            <div class="entry-head">
-              <span class="entry-title">AI-based plant extract analyzing device to identify disease</span>
-              <span class="entry-when">Issued 2023</span>
-            </div>
-            <p class="entry-sub">Co-inventor · Design Patent No. 392971-001, Government of India</p>
-          </div>
-        </div>
-        <div>
-          <h3 style="font-size:15px; margin-bottom:10px;">Professional Service</h3>
-          <div class="entry">
-            <div class="entry-head">
-              <span class="entry-title">Ad-hoc Reviewer, Nature Communications</span>
-              <span class="entry-when">2026 – Present</span>
-            </div>
-            <p class="entry-sub">Invited to peer-review manuscripts in computational biology.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TEACHING -->
-    <section id="teaching">
-      <p class="kicker">Teaching</p>
-      <h2 class="h-section">Graduate Teaching Assistant — Florida State University</h2>
-      <p class="entry-when" style="margin-bottom:18px;">Aug 2025 – Summer 2026</p>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Courses supported</span>
-        </div>
-        <ul>
-          <li><b>CGS2060</b> — Computer Fluency (Spring 2026, Fall 2025, Summer 2026)</li>
-          <li><b>CGS2100</b> — Microcomputer Applications for Business/Economics (Spring 2026, Fall 2025, Summer 2026)</li>
-        </ul>
-      </div>
-      <div class="entry">
-        <ul>
-          <li>Held regular office hours supporting computational problem solving, debugging, and algorithmic reasoning.</li>
-          <li>Assessed student work against structured rubrics and delivered constructive technical feedback.</li>
-          <li>Helped students work through projects and kept course logistics running smoothly.</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- EDUCATION -->
     <section id="education">
-      <p class="kicker">Education</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Education</h2>
-
-      <div class="split">
-        <div>
-          <div class="entry">
-            <div class="entry-head">
-              <span class="entry-title">Florida State University</span>
-              <span class="entry-when">Aug 2025 – Present</span>
-            </div>
-            <p class="entry-sub">Ph.D. in Computer Science · Tallahassee, FL</p>
-            <p class="entry-sub">GPA: 4.0 / 4.0 · Focus: computational biology &amp; bioinformatics</p>
-          </div>
-          <div class="entry">
-            <div class="entry-head">
-              <span class="entry-title">SRM Institute of Science and Technology</span>
-              <span class="entry-when">2020 – 2024</span>
-            </div>
-            <p class="entry-sub">B.Tech in Computer Science and Engineering · Chennai, India</p>
-            <p class="entry-sub">CGPA: 9.53 / 10 — First Class with Distinction</p>
-          </div>
+      <h2>Education</h2>
+      <div class="item">
+        <div class="item-head">
+          <h3>Ph.D. in Computer Science, Florida State University</h3>
+          <span class="when">Aug 2025 to present</span>
         </div>
-
-        <div>
-          <h3 style="font-size:15px; margin-bottom:10px;">Relevant coursework</h3>
-          <div class="tag-row">
-            <span class="tag">COT5507 Analytic Methods for CS</span>
-            <span class="tag">CAP5540 Bioinformatics — Sequence Analysis</span>
-            <span class="tag">COT5405 Advanced Algorithms</span>
-            <span class="tag">CAP5638 Pattern Recognition</span>
+        <p class="meta">Focus: computational biology and bioinformatics. GPA 4.0/4.0. Expected graduation August 2030.</p>
+        <div class="two-col" style="margin-top:.9rem;">
+          <div>
+            <h3>Fall 2026 (in progress)</h3>
+            <ul class="plain-list small">
+              <li>Deep and Reinforcement Learning</li>
+              <li>Machine Learning for Solving Biological Problems</li>
+              <li>Data Mining</li>
+            </ul>
           </div>
-          <div class="tag-row" style="margin-top:8px;">
-            <span class="tag a">18CSC305J Artificial Intelligence</span>
-            <span class="tag a">18GEO104T Computational Genomics</span>
-            <span class="tag a">18CSC201J Data Structures &amp; Algorithms</span>
-            <span class="tag a">18ECO108J Embedded System Design</span>
-            <span class="tag a">18NTO403T Scientific Research Principles</span>
+          <div>
+            <h3>Completed</h3>
+            <ul class="plain-list small">
+              <li>COT5405 Advanced Algorithms</li>
+              <li>COT5507 Analytic Methods for Computer Science</li>
+              <li>CAP5540 Bioinformatics: Sequence Analysis</li>
+              <li>CAP5638 Pattern Recognition</li>
+            </ul>
           </div>
         </div>
       </div>
+      <div class="item">
+        <div class="item-head">
+          <h3>B.Tech in Computer Science and Engineering, SRM Institute of Science and Technology</h3>
+          <span class="when">2020 to 2024</span>
+        </div>
+        <p class="meta">Chennai, India. CGPA 9.53/10, First Class with Distinction.</p>
+        <p class="small">Relevant coursework: Artificial Intelligence, Computational Genomics, Data Structures and Algorithms, Scientific Research Principles.</p>
+      </div>
     </section>
 
-    <!-- SKILLS -->
+    <section id="teaching">
+      <h2>Teaching</h2>
+      <div class="item">
+        <div class="item-head">
+          <h3>Graduate Teaching Assistant, Florida State University</h3>
+          <span class="when">Aug 2025 to Summer 2026</span>
+        </div>
+        <p class="meta">CGS2060 Computer Fluency and CGS2100 Microcomputer Applications for Business and Economics (Fall 2025, Spring 2026, Summer 2026)</p>
+        <ul>
+          <li>Held regular office hours on computational problem solving, debugging, and algorithmic reasoning.</li>
+          <li>Graded student work against structured rubrics and gave constructive technical feedback.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="service">
+      <h2>Service and patents</h2>
+      <div class="item">
+        <div class="item-head">
+          <h3>Ad-hoc reviewer, Nature Communications</h3>
+          <span class="when">2026 to present</span>
+        </div>
+        <p class="meta">Peer review in computational biology and single-cell genomics.</p>
+      </div>
+      <div class="item">
+        <div class="item-head">
+          <h3>Co-inventor, AI-based plant extract analyzing device to identify disease</h3>
+          <span class="when">Issued 2023</span>
+        </div>
+        <p class="meta">Design Patent No. 392971-001, Government of India</p>
+      </div>
+    </section>
+
     <section id="skills">
-      <p class="kicker">Skills</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Skills</h2>
-
-      <div class="skill-groups">
-        <div class="skill-group">
-          <h4>Machine learning &amp; deep learning</h4>
-          <div class="tag-row">
-            <span class="tag">Graph neural networks</span>
-            <span class="tag">Autoencoders</span>
-            <span class="tag">Contrastive learning</span>
-            <span class="tag">PyTorch</span>
-            <span class="tag">XGBoost</span>
-            <span class="tag">Random forests</span>
-          </div>
+      <h2>Skills</h2>
+      <div class="two-col small">
+        <div>
+          <h3>Machine learning</h3>
+          <p>PyTorch, graph neural networks, autoencoders, contrastive learning, LLM fine-tuning (DPO), XGBoost, random forests</p>
+          <h3>Programming and infrastructure</h3>
+          <p>Python (advanced), C/C++, Bash, Git, Linux, SLURM and HPC clusters, Conda</p>
         </div>
-        <div class="skill-group">
-          <h4>Computational biology / genomics</h4>
-          <div class="tag-row">
-            <span class="tag m">scRNA-seq &amp; scDNA-seq</span>
-            <span class="tag m">Variant calling (SNV/Indel)</span>
-            <span class="tag m">CNA analysis</span>
-            <span class="tag m">Spatial transcriptomics</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <h4>Bioinformatics tools</h4>
-          <div class="tag-row">
-            <span class="tag a">BWA</span>
-            <span class="tag a">Samtools</span>
-            <span class="tag a">GATK / Mutect2</span>
-            <span class="tag a">Scanpy</span>
-            <span class="tag a">Seurat</span>
-            <span class="tag a">AnnData</span>
-            <span class="tag a">Ensembl BioMart</span>
-          </div>
-        </div>
-        <div class="skill-group">
-          <h4>Programming &amp; infrastructure</h4>
-          <div class="tag-row">
-            <span class="tag">Python (advanced)</span>
-            <span class="tag">C/C++</span>
-            <span class="tag">Bash</span>
-            <span class="tag">Linux/Unix</span>
-            <span class="tag">SLURM &amp; HPC clusters</span>
-            <span class="tag">Git</span>
-          </div>
+        <div>
+          <h3>Genomics</h3>
+          <p>scRNA-seq, scDNA-seq, spatial transcriptomics, copy number analysis, variant calling (SNV/indel)</p>
+          <h3>Bioinformatics tools</h3>
+          <p>Scanpy, Seurat, AnnData, BWA, Samtools, GATK/Mutect2, Ensembl BioMart</p>
         </div>
       </div>
     </section>
 
-    <!-- AWARDS -->
     <section id="awards">
-      <p class="kicker">Honors &amp; Awards</p>
-      <h2 class="h-section" style="position:absolute; left:-9999px;">Awards</h2>
-
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Winning Team — ReliaQuest Quest for What's Next Pitch Competition</span>
-          <span class="entry-when">2026</span>
+      <h2>Honors and awards</h2>
+      <div class="item">
+        <div class="item-head">
+          <h3>Winning team, ReliaQuest Quest for What's Next Pitch Competition</h3>
+          <span class="when">2026</span>
         </div>
-        <p class="entry-sub">$100,000 in funding awarded to the team for its AI and cybersecurity project.</p>
+        <p class="meta">$100,000 in funding for the team's AI and cybersecurity project.</p>
       </div>
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Winning Team — SRM Smart Campus Hackathon</span>
-          <span class="entry-when">2023</span>
+      <div class="item">
+        <div class="item-head">
+          <h3>Winning team, SRM Smart Campus Hackathon</h3>
+          <span class="when">2023</span>
         </div>
       </div>
-      <div class="entry">
-        <div class="entry-head">
-          <span class="entry-title">Compex Scholarship — Government of India</span>
-          <span class="entry-when">2020</span>
+      <div class="item">
+        <div class="item-head">
+          <h3>Compex Scholarship, Government of India</h3>
+          <span class="when">2020</span>
         </div>
       </div>
     </section>
 
-    <!-- CONTACT -->
     <section id="contact">
-      <p class="kicker">Contact</p>
-      <h2 class="h-section">Get in touch</h2>
-      <div class="card">
-        <p style="margin:0 0 12px; color:var(--muted);">
-          Open to conversations on single-cell genomics, graph representation learning, and computational
-          oncology — reach out by email.
-        </p>
-        <div class="tag-row">
-          <span class="tag obfuscated-email" data-user="pbhattarai" data-domain="fsu.edu">pbhattarai [at] fsu [dot] edu</span>
-          <span class="tag m"><a href="https://www.linkedin.com/in/pankajbhattarai/" target="_blank" rel="noreferrer">linkedin.com/in/pankajbhattarai</a></span>
-          <span class="tag a">Tallahassee, FL</span>
-        </div>
-      </div>
+      <h2>Contact</h2>
+      <p>I'm happy to talk about single-cell genomics, graph representation learning, computational oncology, or internship opportunities. Email is the best way to reach me: <span class="obfuscated-email" data-user="pbhattarai" data-domain="fsu.edu">pbhattarai [at] fsu [dot] edu</span>.</p>
+      <p>Code for DeepMalignant, OncoSpot, scLongTree, and other lab projects is on the <a href="https://github.com/compbio-mallory" target="_blank" rel="noreferrer">lab GitHub</a>.</p>
     </section>
 
   </main>
+
+  <footer>
+    <p>&copy; 2026 Pankaj Bhattarai. Last updated November 2026.</p>
+  </footer>
 </div>
 
-<footer class="site-footer">
-  <span>© Pankaj Bhattarai</span>
-  <!-- <span>Florida State University · Dept. of Computer Science</span> -->
-</footer>
-
-
 <script>
-  // Assemble mailto links client-side so the address isn't plain-text in the page source.
-  document.querySelectorAll('.obfuscated-email').forEach(function(el){
-    var user = el.getAttribute('data-user');
-    var domain = el.getAttribute('data-domain');
-    var address = user + '@' + domain;
+  // Build mailto links in the browser so the address isn't plain text in the page source.
+  document.querySelectorAll('.obfuscated-email').forEach(function (el) {
+    var address = el.getAttribute('data-user') + '@' + el.getAttribute('data-domain');
     var link = document.createElement('a');
     link.href = 'mailto:' + address;
     link.textContent = address;
