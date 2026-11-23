@@ -57,18 +57,14 @@
     --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color-scheme: light;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --paper:#14171c; --ink:#e6e9ed; --muted:#9aa4ae; --rule:#59626d; --hair:#2b3139;
-      --band:#1b2027; --link:#8db4ec; --gain:#e2736d; --loss:#8db4ec;
-      color-scheme: dark;
-    }
-  }
+  /* Night edition: warm ink-black paper, cream type, lamplight links. */
+  /* Light is the default; dark applies only when the visitor picks it. */
   :root[data-theme="dark"]{
-    --paper:#14171c; --ink:#e6e9ed; --muted:#9aa4ae; --rule:#59626d; --hair:#2b3139;
-    --band:#1b2027; --link:#8db4ec; --gain:#e2736d; --loss:#8db4ec;
+    --paper:#131210; --ink:#ede6d8; --muted:#a59e90; --rule:#b3ab9c; --hair:#2f2c27;
+    --band:#1e1c19; --link:#e6bc6e; --gain:#f0806f; --loss:#80b3ea;
     color-scheme: dark;
   }
+  ::selection{ background:var(--link); color:var(--paper); }
 
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
@@ -83,6 +79,20 @@
 
   .wrap{ max-width:47rem; margin:0 auto; padding:0 1.25rem; }
 
+  /* Wide screens: newspaper layout with a main column and a sidebar rail. */
+  @media (min-width:1080px){
+    .wrap{ max-width:74rem; padding:0 2rem; }
+    .cols{ display:grid; grid-template-columns:minmax(0,1fr) 21rem; column-gap:2.5rem; }
+    .col-rail{ border-left:1px solid var(--hair); padding-left:2.5rem; font-size:.94rem; }
+    .col-rail h2{ font-size:1.3rem; }
+    .col-rail h3{ font-size:1.02rem; }
+    .col-rail .meta{ font-size:.92rem; }
+    .col-rail .item-head{ flex-direction:column; gap:.1rem; }
+    .col-rail .two-col{ grid-template-columns:1fr; gap:.9rem; }
+    .col-rail .two-col > div + div{ border-left:none; padding-left:0; }
+    .col-rail .small{ font-size:inherit; }
+  }
+
   /* Masthead */
   .masthead{ padding-top:1.25rem; text-align:center; }
   .topbar{
@@ -96,7 +106,7 @@
   }
   .theme-toggle:hover{ background:var(--band); }
   h1{
-    font-family:var(--serif); font-weight:700; font-size:clamp(2.4rem, 7.5vw, 4rem);
+    font-family:var(--serif); font-weight:700; font-size:clamp(2.4rem, 7.5vw, 5.25rem);
     line-height:1; letter-spacing:-0.02em; margin:0;
     border-top:4px double var(--rule); padding-top:1rem;
   }
@@ -258,7 +268,8 @@
     </nav>
   </header>
 
-  <main>
+  <main class="cols">
+  <div class="col-main">
 
     <section id="about">
       <h2>About</h2>
@@ -367,6 +378,9 @@
         <p class="meta">5th International Conference on Information Management and Machine Intelligence (ICIMMI 2023)</p>
       </div>
     </section>
+
+  </div>
+  <aside class="col-rail" aria-label="Education, service, and contact">
 
     <section id="education">
       <h2>Education</h2>
@@ -486,6 +500,7 @@
       <p>Code for DeepMalignant, OncoSpot, scLongTree, and other lab projects is on the <a href="https://github.com/compbio-mallory" target="_blank" rel="noreferrer">lab GitHub</a>.</p>
     </section>
 
+  </aside>
   </main>
 
   <footer>
@@ -503,14 +518,12 @@
     el.replaceWith(link);
   });
 
-  // Light/dark toggle. Follows the system setting until the visitor picks one.
+  // Light/dark toggle. Light by default; remembers the visitor's choice.
   (function () {
     var root = document.documentElement;
     var btn = document.querySelector('.theme-toggle');
-    var media = window.matchMedia('(prefers-color-scheme: dark)');
     function current() {
-      var t = root.getAttribute('data-theme');
-      return t ? t : (media.matches ? 'dark' : 'light');
+      return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     }
     function render() {
       var dark = current() === 'dark';
@@ -523,7 +536,6 @@
       try { localStorage.setItem('theme', next); } catch (e) {}
       render();
     });
-    if (media.addEventListener) media.addEventListener('change', render);
     render();
   })();
 </script>
