@@ -5,146 +5,186 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pankaj Bhattarai | Machine learning for cancer genomics, Florida State University</title>
 <meta name="description" content="Pankaj Bhattarai, Ph.D. student in Computer Science at Florida State University, building machine learning methods for single-cell and spatial cancer genomics.">
+<script>
+  // Apply a saved theme before the page paints, so there is no flash.
+  try {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+  } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Public+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  /* Light: newsprint. Dark: night edition. */
   :root{
-    --paper:#fcfcfd;
-    --ink:#1c2128;
-    --muted:#5b6570;
-    --rule:#e2e6eb;
-    --band:#f1f3f6;
-    --link:#2c5a9a;
-    --gain:#b23b36;
-    --loss:#2c5a9a;
-    --serif:"Literata", Georgia, "Times New Roman", serif;
+    --paper:#f7f6f2;
+    --ink:#141414;
+    --muted:#55534e;
+    --rule:#141414;
+    --hair:#cfccc4;
+    --band:#ebe9e3;
+    --link:#1f3f73;
+    --gain:#a8322d;
+    --loss:#1f4f8f;
+    --serif:"Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
     --sans:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
-    :root{
-      --paper:#14171c;
-      --ink:#e6e9ed;
-      --muted:#9aa4ae;
-      --rule:#2b3139;
-      --band:#1b2027;
-      --link:#8db4ec;
-      --gain:#e2736d;
-      --loss:#8db4ec;
+    :root:not([data-theme="light"]){
+      --paper:#14171c; --ink:#e6e9ed; --muted:#9aa4ae; --rule:#59626d; --hair:#2b3139;
+      --band:#1b2027; --link:#8db4ec; --gain:#e2736d; --loss:#8db4ec;
       color-scheme: dark;
     }
+  }
+  :root[data-theme="dark"]{
+    --paper:#14171c; --ink:#e6e9ed; --muted:#9aa4ae; --rule:#59626d; --hair:#2b3139;
+    --band:#1b2027; --link:#8db4ec; --gain:#e2736d; --loss:#8db4ec;
+    color-scheme: dark;
   }
 
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   body{
     margin:0; background:var(--paper); color:var(--ink);
-    font-family:var(--sans); font-size:17px; line-height:1.6;
+    font-family:var(--serif); font-size:18px; line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
   a{ color:var(--link); text-underline-offset:2px; text-decoration-thickness:1px; }
   a:hover{ text-decoration-thickness:2px; }
-  a:focus-visible{ outline:2px solid var(--link); outline-offset:3px; border-radius:2px; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--link); outline-offset:3px; border-radius:2px; }
 
-  .wrap{ max-width:46rem; margin:0 auto; padding:0 1.25rem; }
+  .wrap{ max-width:47rem; margin:0 auto; padding:0 1.25rem; }
 
-  /* Header */
-  header.top{ padding:3.5rem 0 1.5rem; }
-  h1{
-    font-family:var(--serif); font-weight:600; font-size:clamp(2rem, 5vw, 2.75rem);
-    line-height:1.1; margin:0 0 .5rem; letter-spacing:-0.01em;
+  /* Masthead */
+  .masthead{ padding-top:1.25rem; text-align:center; }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:1rem;
+    font-family:var(--sans); font-size:.8rem; color:var(--muted);
+    padding-bottom:.6rem;
   }
-  .role{ margin:0; color:var(--muted); font-size:1.05rem; }
-  .contact-line{ margin:.9rem 0 0; display:flex; flex-wrap:wrap; gap:.4rem 1.25rem; font-size:.95rem; }
-  .contact-line span{ color:var(--muted); }
+  .theme-toggle{
+    font:inherit; color:var(--ink); background:transparent; cursor:pointer;
+    border:1px solid var(--rule); border-radius:2px; padding:.25rem .65rem;
+  }
+  .theme-toggle:hover{ background:var(--band); }
+  h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(2.4rem, 7.5vw, 4rem);
+    line-height:1; letter-spacing:-0.02em; margin:0;
+    border-top:4px double var(--rule); padding-top:1rem;
+  }
+  .dateline{
+    display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    margin:1rem 0 0; padding:.45rem 0;
+    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+    font-family:var(--sans); font-size:.82rem; color:var(--ink);
+  }
+  .dateline .center{ font-family:var(--serif); font-style:italic; font-size:.98rem; }
+  .contact-line{
+    margin:.8rem 0 0; display:flex; justify-content:center; flex-wrap:wrap; gap:.3rem 1.25rem;
+    font-family:var(--sans); font-size:.9rem;
+  }
 
-  .cna{ display:block; width:100%; height:auto; margin:2rem 0 .25rem; }
-  .cna .base{ stroke:var(--rule); stroke-width:1; }
+  figure.cna-fig{ margin:2rem 0 0; }
+  .cna{ display:block; width:100%; height:auto; }
+  .cna .base{ stroke:var(--hair); stroke-width:1; }
   .cna .band{ fill:var(--band); }
   .cna .segs line{ stroke-width:3; stroke-linecap:butt; vector-effect:non-scaling-stroke; }
-  .cna .flat{ stroke:var(--muted); opacity:.55; }
+  .cna .flat{ stroke:var(--muted); opacity:.6; }
   .cna .gain{ stroke:var(--gain); }
   .cna .loss{ stroke:var(--loss); }
   .cna .chr text{ font-family:var(--sans); font-size:10px; fill:var(--muted); }
-  .cna-caption{ margin:0; font-size:.8rem; color:var(--muted); }
-  .cna-caption .g{ color:var(--gain); font-weight:600; }
-  .cna-caption .l{ color:var(--loss); font-weight:600; }
-
+  figcaption{
+    margin-top:.35rem; padding-top:.35rem; border-top:1px solid var(--hair);
+    font-size:.85rem; font-style:italic; color:var(--muted); text-align:left;
+  }
+  figcaption .g{ color:var(--gain); font-style:normal; font-weight:600; }
+  figcaption .l{ color:var(--loss); font-style:normal; font-weight:600; }
   @media (prefers-reduced-motion: no-preference){
     .cna .segs{ animation:reveal 1.4s ease-out both; clip-path:inset(0 100% 0 0); }
     @keyframes reveal{ to{ clip-path:inset(0 0 0 0); } }
   }
 
   nav.sections{
-    border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
-    margin-top:1.75rem; padding:.6rem 0;
-    display:flex; flex-wrap:wrap; gap:.25rem .95rem; font-size:.9rem;
+    margin-top:1.5rem; padding:.55rem 0;
+    border-top:2px solid var(--rule); border-bottom:1px solid var(--rule);
+    display:flex; justify-content:center; flex-wrap:wrap; gap:.2rem .8rem;
+    font-family:var(--sans); font-size:.85rem;
   }
   nav.sections a{ color:var(--ink); text-decoration:none; }
-  nav.sections a:hover{ color:var(--link); text-decoration:underline; }
+  nav.sections a:hover{ text-decoration:underline; }
 
   /* Sections */
-  section{ padding:2.5rem 0 .5rem; scroll-margin-top:1rem; }
+  section{ padding:2.25rem 0 .25rem; scroll-margin-top:1rem; }
   h2{
-    font-family:var(--serif); font-weight:600; font-size:1.5rem; line-height:1.25;
-    margin:0 0 1.1rem;
+    font-family:var(--serif); font-weight:700; font-size:1.65rem; line-height:1.2;
+    margin:0 0 1.1rem; padding-top:.5rem; border-top:2px solid var(--rule);
   }
-  h3{ font-family:var(--sans); font-weight:600; font-size:1.05rem; margin:0; line-height:1.4; }
+  h3{ font-family:var(--serif); font-weight:600; font-size:1.15rem; margin:0; line-height:1.35; }
   p{ margin:0 0 1rem; }
-  .lede{ font-family:var(--serif); font-size:1.15rem; line-height:1.65; }
+  .lede{ font-size:1.25rem; line-height:1.55; }
+  .lede::first-letter{
+    float:left; font-weight:700; font-size:3.4em; line-height:.85; padding:.08em .08em 0 0;
+  }
 
-  .item{ padding:1rem 0; border-top:1px solid var(--rule); }
+  .item{ padding:1rem 0; border-top:1px solid var(--hair); }
   .item:first-of-type{ border-top:none; padding-top:0; }
   .item-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
-  .when{ color:var(--muted); font-size:.9rem; white-space:nowrap; flex-shrink:0; }
-  .meta{ color:var(--muted); font-size:.95rem; margin:.2rem 0 0; }
+  .when{ font-family:var(--sans); color:var(--muted); font-size:.82rem; white-space:nowrap; flex-shrink:0; }
+  .meta{ color:var(--muted); font-size:.98rem; margin:.2rem 0 0; }
   .item ul{ margin:.6rem 0 0; padding-left:1.2rem; }
   .item li{ margin:.3rem 0; }
   .item p{ margin:.5rem 0 0; }
 
   .status{
-    display:inline-block; font-size:.8rem; font-weight:600; line-height:1.3;
-    padding:.1rem .45rem; border-radius:4px; border:1px solid var(--rule);
-    color:var(--muted); margin-left:.35rem; vertical-align:2px; white-space:nowrap;
+    display:inline-block; font-family:var(--sans); font-size:.72rem; font-weight:600; line-height:1.3;
+    padding:.1rem .4rem; border:1px solid var(--rule); border-radius:0;
+    color:var(--ink); margin-left:.35rem; vertical-align:3px; white-space:nowrap;
   }
 
   .figures{
-    display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:.5rem;
-    margin:.9rem 0 0; padding:0;
+    display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:0;
+    margin:1rem 0 0; padding:.6rem 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
   }
-  .figures div{ border-left:3px solid var(--gain); padding:.15rem 0 .15rem .65rem; }
-  .figures dt{ font-family:var(--serif); font-weight:600; font-size:1.3rem; line-height:1.2; }
-  .figures dd{ margin:0; font-size:.85rem; color:var(--muted); }
+  .figures div{ padding:0 .75rem; border-left:1px solid var(--hair); }
+  .figures div:first-child{ border-left:none; padding-left:0; }
+  .figures dt{ font-family:var(--serif); font-weight:700; font-size:1.6rem; line-height:1.1; }
+  .figures dd{ margin:.1rem 0 0; font-family:var(--sans); font-size:.78rem; color:var(--muted); }
 
-  .pubs{ list-style:none; margin:0; padding:0; counter-reset:none; }
-  .pubs li{ padding:.9rem 0; border-top:1px solid var(--rule); }
+  .pubs{ list-style:none; margin:0; padding:0; }
+  .pubs li{ padding:.9rem 0; border-top:1px solid var(--hair); }
   .pubs li:first-child{ border-top:none; padding-top:0; }
-  .pub-title{ font-weight:600; }
-  .pub-authors{ margin:.15rem 0 0; color:var(--muted); font-size:.95rem; }
+  .pub-title{ font-weight:600; font-size:1.08rem; line-height:1.4; }
+  .pub-authors{ margin:.15rem 0 0; color:var(--muted); font-size:.98rem; }
   .pub-authors b{ color:var(--ink); font-weight:600; }
-  .pub-venue{ margin:.15rem 0 0; font-size:.95rem; }
-  .pub-venue em{ font-style:italic; }
+  .pub-venue{ margin:.15rem 0 0; font-size:.98rem; }
 
-  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1.5rem 2rem; }
-  .two-col h3{ margin-bottom:.4rem; }
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:1.25rem 2rem; }
+  .two-col > div + div{ border-left:1px solid var(--hair); padding-left:2rem; }
+  .two-col h3{ margin-bottom:.35rem; }
   .plain-list{ margin:0; padding-left:1.1rem; }
   .plain-list li{ margin:.25rem 0; }
-  .muted{ color:var(--muted); }
-  .small{ font-size:.92rem; }
+  .small{ font-size:.95rem; }
 
-  footer{ border-top:1px solid var(--rule); margin-top:3rem; padding:1.5rem 0 3rem; color:var(--muted); font-size:.85rem; }
+  footer{
+    border-top:4px double var(--rule); margin-top:3rem; padding:1rem 0 3rem;
+    font-family:var(--sans); color:var(--muted); font-size:.8rem; text-align:center;
+  }
 
   @media (max-width:640px){
-    body{ font-size:16px; }
-    header.top{ padding-top:2.25rem; }
+    body{ font-size:17px; }
+    .dateline{ justify-content:center; text-align:center; }
+    .dateline .side{ display:none; }
     .item-head{ flex-direction:column; gap:.1rem; }
-    .figures{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .figures{ grid-template-columns:repeat(2, minmax(0,1fr)); row-gap:.6rem; }
+    .figures div:nth-child(3){ border-left:none; padding-left:0; }
     .two-col{ grid-template-columns:1fr; }
+    .two-col > div + div{ border-left:none; padding-left:0; }
     .cna .chr{ display:none; }
   }
   @media print{
-    nav.sections, .cna, .cna-caption{ display:none; }
+    .topbar, nav.sections, figure.cna-fig{ display:none; }
     a{ color:inherit; }
   }
 </style>
@@ -152,18 +192,28 @@
 <body>
 <div class="wrap">
 
-  <header class="top">
+  <header class="masthead">
+    <div class="topbar">
+      <span>Ph.D. student, Computer Science</span>
+      <button class="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+    </div>
     <h1>Pankaj Bhattarai</h1>
-    <p class="role">Ph.D. student in Computer Science, Florida State University. Machine learning for single-cell and spatial cancer genomics.</p>
+    <p class="dateline">
+      <span class="side">Florida State University</span>
+      <span class="center">Machine learning for single-cell and spatial cancer genomics</span>
+      <span class="side">Tallahassee, Florida</span>
+    </p>
     <p class="contact-line">
       <span class="obfuscated-email" data-user="pbhattarai" data-domain="fsu.edu">pbhattarai [at] fsu [dot] edu</span>
       <a href="https://www.linkedin.com/in/pankajbhattarai/" target="_blank" rel="noreferrer">LinkedIn</a>
-      <span>Tallahassee, Florida</span>
-      <a href="https://github.com/compbio-mallory" target="_blank" rel="noreferrer">Lab GitHub (all project code)</a>
+      <a href="https://compbio-mallory.github.io/DeepBioMed/index.html" target="_blank" rel="noreferrer">DeepBioMed Lab</a>
+      <a href="https://github.com/compbio-mallory" target="_blank" rel="noreferrer">Lab GitHub</a>
     </p>
 
-    <svg class="cna" viewBox="0 0 720 74" role="img" aria-label="Illustration of a tumor copy-number profile across chromosomes 1 to 22, with gains above the baseline and losses below."><line x1="0" y1="30" x2="720" y2="30" class="base"/><rect x="60.0" y="4" width="55.4" height="52" class="band"/><rect x="166.6" y="4" width="43.5" height="52" class="band"/><rect x="257.5" y="4" width="39.1" height="52" class="band"/><rect x="339.0" y="4" width="33.2" height="52" class="band"/><rect x="409.7" y="4" width="30.7" height="52" class="band"/><rect x="477.3" y="4" width="30.4" height="52" class="band"/><rect x="539.8" y="4" width="24.5" height="52" class="band"/><rect x="593.6" y="4" width="20.6" height="52" class="band"/><rect x="639.1" y="4" width="18.3" height="52" class="band"/><rect x="676.9" y="4" width="14.6" height="52" class="band"/><rect x="708.3" y="4" width="11.7" height="52" class="band"/><g class="segs"><line x1="0.0" y1="30" x2="27.3" y2="30" class="flat"/><line x1="27.3" y1="14" x2="57.0" y2="14" class="gain"/><line x1="60.0" y1="30" x2="115.3" y2="30" class="flat"/><line x1="118.3" y1="30" x2="136.4" y2="30" class="flat"/><line x1="136.4" y1="14" x2="163.6" y2="14" class="gain"/><line x1="166.6" y1="46" x2="210.1" y2="46" class="loss"/><line x1="213.1" y1="30" x2="237.9" y2="30" class="flat"/><line x1="237.9" y1="14" x2="254.5" y2="14" class="gain"/><line x1="257.5" y1="30" x2="296.6" y2="30" class="flat"/><line x1="299.6" y1="14" x2="336.0" y2="14" class="gain"/><line x1="339.0" y1="46" x2="349.9" y2="46" class="loss"/><line x1="349.9" y1="14" x2="372.1" y2="14" class="gain"/><line x1="375.1" y1="46" x2="386.2" y2="46" class="loss"/><line x1="386.2" y1="30" x2="406.7" y2="30" class="flat"/><line x1="409.7" y1="30" x2="425.0" y2="30" class="flat"/><line x1="425.0" y1="46" x2="440.4" y2="46" class="loss"/><line x1="443.4" y1="30" x2="474.3" y2="30" class="flat"/><line x1="477.3" y1="30" x2="507.7" y2="30" class="flat"/><line x1="510.7" y1="46" x2="536.8" y2="46" class="loss"/><line x1="539.8" y1="30" x2="564.2" y2="30" class="flat"/><line x1="567.2" y1="30" x2="590.6" y2="30" class="flat"/><line x1="593.6" y1="30" x2="614.2" y2="30" class="flat"/><line x1="617.2" y1="30" x2="622.9" y2="30" class="flat"/><line x1="622.9" y1="14" x2="636.1" y2="14" class="gain"/><line x1="639.1" y1="46" x2="657.4" y2="46" class="loss"/><line x1="660.4" y1="30" x2="673.9" y2="30" class="flat"/><line x1="676.9" y1="14" x2="691.6" y2="14" class="gain"/><line x1="694.6" y1="30" x2="705.3" y2="30" class="flat"/><line x1="708.3" y1="30" x2="720.0" y2="30" class="flat"/></g><g class="chr"><text x="28.5" y="70" text-anchor="middle">1</text><text x="87.6" y="70" text-anchor="middle">2</text><text x="141.0" y="70" text-anchor="middle">3</text><text x="233.8" y="70" text-anchor="middle">5</text><text x="425.0" y="70" text-anchor="middle">10</text><text x="578.9" y="70" text-anchor="middle">15</text><text x="684.3" y="70" text-anchor="middle">20</text><text x="714.2" y="70" text-anchor="middle">22</text></g></svg>
-    <p class="cna-caption">An illustrative tumor copy-number profile across chromosomes 1 to 22: <span class="g">gains</span> above the line, <span class="l">losses</span> below. Signals like these are what my models learn from.</p>
+    <figure class="cna-fig">
+      <svg class="cna" viewBox="0 0 720 74" role="img" aria-label="Illustration of a tumor copy-number profile across chromosomes 1 to 22, with gains above the baseline and losses below."><line x1="0" y1="30" x2="720" y2="30" class="base"/><rect x="60.0" y="4" width="55.4" height="52" class="band"/><rect x="166.6" y="4" width="43.5" height="52" class="band"/><rect x="257.5" y="4" width="39.1" height="52" class="band"/><rect x="339.0" y="4" width="33.2" height="52" class="band"/><rect x="409.7" y="4" width="30.7" height="52" class="band"/><rect x="477.3" y="4" width="30.4" height="52" class="band"/><rect x="539.8" y="4" width="24.5" height="52" class="band"/><rect x="593.6" y="4" width="20.6" height="52" class="band"/><rect x="639.1" y="4" width="18.3" height="52" class="band"/><rect x="676.9" y="4" width="14.6" height="52" class="band"/><rect x="708.3" y="4" width="11.7" height="52" class="band"/><g class="segs"><line x1="0.0" y1="30" x2="27.3" y2="30" class="flat"/><line x1="27.3" y1="14" x2="57.0" y2="14" class="gain"/><line x1="60.0" y1="30" x2="115.3" y2="30" class="flat"/><line x1="118.3" y1="30" x2="136.4" y2="30" class="flat"/><line x1="136.4" y1="14" x2="163.6" y2="14" class="gain"/><line x1="166.6" y1="46" x2="210.1" y2="46" class="loss"/><line x1="213.1" y1="30" x2="237.9" y2="30" class="flat"/><line x1="237.9" y1="14" x2="254.5" y2="14" class="gain"/><line x1="257.5" y1="30" x2="296.6" y2="30" class="flat"/><line x1="299.6" y1="14" x2="336.0" y2="14" class="gain"/><line x1="339.0" y1="46" x2="349.9" y2="46" class="loss"/><line x1="349.9" y1="14" x2="372.1" y2="14" class="gain"/><line x1="375.1" y1="46" x2="386.2" y2="46" class="loss"/><line x1="386.2" y1="30" x2="406.7" y2="30" class="flat"/><line x1="409.7" y1="30" x2="425.0" y2="30" class="flat"/><line x1="425.0" y1="46" x2="440.4" y2="46" class="loss"/><line x1="443.4" y1="30" x2="474.3" y2="30" class="flat"/><line x1="477.3" y1="30" x2="507.7" y2="30" class="flat"/><line x1="510.7" y1="46" x2="536.8" y2="46" class="loss"/><line x1="539.8" y1="30" x2="564.2" y2="30" class="flat"/><line x1="567.2" y1="30" x2="590.6" y2="30" class="flat"/><line x1="593.6" y1="30" x2="614.2" y2="30" class="flat"/><line x1="617.2" y1="30" x2="622.9" y2="30" class="flat"/><line x1="622.9" y1="14" x2="636.1" y2="14" class="gain"/><line x1="639.1" y1="46" x2="657.4" y2="46" class="loss"/><line x1="660.4" y1="30" x2="673.9" y2="30" class="flat"/><line x1="676.9" y1="14" x2="691.6" y2="14" class="gain"/><line x1="694.6" y1="30" x2="705.3" y2="30" class="flat"/><line x1="708.3" y1="30" x2="720.0" y2="30" class="flat"/></g><g class="chr"><text x="28.5" y="70" text-anchor="middle">1</text><text x="87.6" y="70" text-anchor="middle">2</text><text x="141.0" y="70" text-anchor="middle">3</text><text x="233.8" y="70" text-anchor="middle">5</text><text x="425.0" y="70" text-anchor="middle">10</text><text x="578.9" y="70" text-anchor="middle">15</text><text x="684.3" y="70" text-anchor="middle">20</text><text x="714.2" y="70" text-anchor="middle">22</text></g></svg>
+      <figcaption>An illustrative tumor copy-number profile across chromosomes 1 to 22: <span class="g">gains</span> above the line, <span class="l">losses</span> below. Signals like these are what my models learn from.</figcaption>
+    </figure>
 
     <nav class="sections" aria-label="Sections">
       <a href="#about">About</a>
@@ -184,7 +234,7 @@
     <section id="about">
       <h2>About</h2>
       <p class="lede">I build machine learning methods that make sense of cancer one cell at a time. My work combines graph representation learning, copy-number analysis, and spatial transcriptomics to identify tumor cells, trace how tumors evolve, and test what biological foundation models actually learn.</p>
-      <p>I am a Graduate Research Assistant in Prof. Xian Mallory's DeepBioMed Lab at Florida State University, working closely with the <a href="https://maiziezhoulab.github.io/" target="_blank" rel="noreferrer">Maizie Zhou Lab</a> at Vanderbilt University. I'm open to research internships and collaborations in machine learning for biology and health.</p>
+      <p>I am a Graduate Research Assistant in Prof. Xian Mallory's <a href="https://compbio-mallory.github.io/DeepBioMed/index.html" target="_blank" rel="noreferrer">DeepBioMed Lab</a> at Florida State University, working closely with the <a href="https://maiziezhoulab.github.io/" target="_blank" rel="noreferrer">Maizie Zhou Lab</a> at Vanderbilt University. I'm open to research internships and collaborations in machine learning for biology and health.</p>
     </section>
 
     <section id="research">
@@ -423,6 +473,30 @@
     link.textContent = address;
     el.replaceWith(link);
   });
+
+  // Light/dark toggle. Follows the system setting until the visitor picks one.
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector('.theme-toggle');
+    var media = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() {
+      var t = root.getAttribute('data-theme');
+      return t ? t : (media.matches ? 'dark' : 'light');
+    }
+    function render() {
+      var dark = current() === 'dark';
+      btn.textContent = dark ? 'Light mode' : 'Dark mode';
+      btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      render();
+    });
+    if (media.addEventListener) media.addEventListener('change', render);
+    render();
+  })();
 </script>
 </body>
 </html>
